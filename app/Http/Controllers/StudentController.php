@@ -17,15 +17,14 @@ class StudentController extends ApiController
         $nik = $post['nik'];
         $password = $post['password'];
         try {
-            $students = DB::table('user')
+            $student = Student::select('*')
                 ->where('user.nik', '=', $nik)
                 ->where('user.password', '=', md5($password))
-                ->select('user.*')
                 ->get();
-            if(count($students) != 0){
-                return $this->successResponse($students);
+            if(count($student) != 0){
+                return $this->successResponse($student,"Success",200);
             }else {
-                return $this->errorResponse('Cannot find the user.', 400);
+                return $this->errorResponse('Cannot find the user.', 204);
             }
         } catch (Exception $e) {
             return $this->errorResponse('Something has been wrong.', 400);

@@ -11,7 +11,7 @@ class Student extends Model
     protected $fillable = [
         'no_absen',
         'nik',
-        'password',
+        // 'password',
         'nama',
         'unit',
         'kelas',
@@ -20,6 +20,9 @@ class Student extends Model
         'last_status',
         'last_active',
         'last_ujian ',
+    ];
+    protected $hidden = [
+        'password'
     ];
     protected $table = 'user';
 }

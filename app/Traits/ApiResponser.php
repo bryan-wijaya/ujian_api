@@ -13,19 +13,21 @@ trait ApiResponser
 
     protected function successResponse($data, $message = null, $code = 200)
     {
-        return response()->json([
-            'status' => 'Success',
-            'message' => $message,
-            'data' => $data
-        ], $code);
+        $ret = [
+            "status" => $code,
+            "message" => $message,
+            "data" => $data
+        ];
+        return response()->json($ret);
     }
 
-    protected function errorResponse($message = null, $code)
+    protected function errorResponse($message = null, $code = 404)
     {
-        return response()->json([
-            'status' => 'Error',
-            'message' => $message,
-            'data' => null
-        ], $code);
+        $ret = [
+            "status" => $code,
+            "message" => $message,
+            "data" => null
+        ];
+        return response()->json($ret);
     }
 }
