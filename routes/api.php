@@ -20,4 +20,5 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::post("students/login", 'App\Http\Controllers\StudentController@login');
 Route::get("students/getAllUser", 'App\Http\Controllers\StudentController@getAllUser');
-Route::get("students/soalUjian/{id}", 'App\Http\Controllers\StudentController@getSoalByIdUjian');
+Route::post("students/getUjianByUser", 'App\Http\Controllers\StudentController@getUjianByUser');
+Route::post("students/soalUjian", 'App\Http\Controllers\StudentController@getSoalByIdUjian');

@@ -37,38 +37,65 @@ class StudentController extends ApiController
         return $this->successResponse($data);
     }
 
-    public function getSoalByIdUjian($idUjian)
-    {
-        $ujian = DB::table('ujian')
-        ->where('id','=',$idUjian)
-        ->select('*')
-        ->first();
-        $tipe = "";
-        $jenis = "";
-        if($ujian != null){
-            $tipe = $ujian->tipe;
-            $jenis = $ujian->jenis;
+    public function getUjianByUser(Request $request){
+        if(isset($request->nik)){
+            $nik = $request->nik;
+            $siswa = Student::where('nik','=',$nik)->first();
+            if(isset($siswa) && $siswa != null){
+                $kelas = substr($siswa->kelas,0,1);
+                $ujian = DB::table('ujian')
+                    ->where('status','=','aktif')
+                    ->where('kelas','=',$kelas)
+                    ->select('*')
+                    ->get();
+                return $this->successResponse($ujian,"Success",200);
+            }else{
+                return $this->errorResponse('Student cannot be found.', 400);
+            }
         }else{
             return $this->errorResponse('Something has been wrong.', 400);
         }
-        if($tipe == 'Tunggal'){
-            if($jenis == "Pilihan Ganda"){
-                $soalpg = DB::table('ujian_has_soal')
-                ->join('soalpg', 'ujian_has_soal.id_soal', '=', 'soalpg.id')
-                ->where('ujian_has_soal.id_ujian','=',$idUjian)
-                ->select('soalpg.*')
-                ->get();
-                return $this->successResponse($soalpg);
+        return $this->errorResponse('Something has been wrong.', 400);
+    }
+
+    public function getSoalByIdUjian(Request $request)
+    {
+        if(isset($request->id)){
+            $idUjian = $request->id;
+            $ujian = DB::table('ujian')
+            ->where('id','=',$idUjian)
+            ->select('*')
+            ->first();
+            $tipe = "";
+            $jenis = "";
+            if($ujian != null){
+                $tipe = $ujian->tipe;
+                $jenis = $ujian->jenis;
             }else{
-                $isian = DB::table('ujian_has_soal')
-                ->join('soalisian', 'ujian_has_soal.id_soal', '=', 'soalisian.id')
-                ->where('ujian_has_soal.id_ujian','=',$idUjian)
-                ->select('soalisian.*')
-                ->get();
-                return $this->successResponse($isian);
+                return $this->errorResponse('Something has been wrong.', 400);
+            }
+            if($tipe == 'Tunggal'){
+                if($jenis == "Pilihan Ganda"){
+                    $soalpg = DB::table('ujian_has_soal')
+                    ->join('soalpg', 'ujian_has_soal.id_soal', '=', 'soalpg.id')
+                    ->where('ujian_has_soal.id_ujian','=',$idUjian)
+                    ->select('soalpg.*')
+                    ->get();
+                    
+                    return $this->successResponse($soalpg);
+                }else{
+                    $isian = DB::table('ujian_has_soal')
+                    ->join('soalisian', 'ujian_has_soal.id_soal', '=', 'soalisian.id')
+                    ->where('ujian_has_soal.id_ujian','=',$idUjian)
+                    ->select('soalisian.*')
+                    ->get();
+                    return $this->successResponse($isian);
+                }
+            }else{
+                //return gabungan
+                return $this->errorResponse('Something has been wrong.', 400);
             }
         }else{
-            //return gabungan
             return $this->errorResponse('Something has been wrong.', 400);
         }
     }
