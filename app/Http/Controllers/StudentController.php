@@ -178,9 +178,6 @@ class StudentController extends ApiController
     }
 
     public function collectUjian(Request $request){
-        // echo $request->nik;
-        // echo $request->id_ujian;
-        // echo $request->arr;
         if(isset($request->id_ujian)){
             $idUjian = $request->id_ujian;
             $arr = $request->arr;
@@ -228,7 +225,7 @@ class StudentController extends ApiController
                             $jawabanSiswa->jb = $arr[$i]['b'];
                             $jawabanSiswa->jc = $arr[$i]['c'];
                             $jawabanSiswa->jd = $arr[$i]['d'];
-                            // $jawabanSiswa->save();
+                            $jawabanSiswa->save();
                         }
                     }
                     //insert to db nilai
@@ -243,7 +240,7 @@ class StudentController extends ApiController
                     $nilai->tampil = "non-aktif";
                     $nilai->ujian_ulang = 0;
                     $nilai->save();
-                    return $this->successResponse();
+                    return $this->successResponse(null);
 
                 }else{
                     $isian = DB::table('ujian_has_soal')
@@ -251,7 +248,7 @@ class StudentController extends ApiController
                     ->where('ujian_has_soal.id_ujian','=',$idUjian)
                     ->select('soalisian.*')
                     ->get();
-                    return $this->successResponse();
+                    return $this->successResponse(null);
                 }
             }else{
                 //return gabungan
