@@ -243,19 +243,21 @@ class StudentController extends ApiController
                     $nilai->tampil = "non-aktif";
                     $nilai->ujian_ulang = 0;
                     $nilai->save();
-                    return null;
+                    return $this->successResponse();
+
                 }else{
                     $isian = DB::table('ujian_has_soal')
                     ->join('soalisian', 'ujian_has_soal.id_soal', '=', 'soalisian.id')
                     ->where('ujian_has_soal.id_ujian','=',$idUjian)
                     ->select('soalisian.*')
                     ->get();
+                    return $this->successResponse();
                 }
             }else{
                 //return gabungan
             }
         }
-        return null;
+        return $this->errorResponse('Something has been wrong.', 400);
     }
 
     protected function checkKunci($kunci, $jawaban){
