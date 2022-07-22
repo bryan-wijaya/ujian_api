@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Models\JawabanSiswa;
+use App\Models\Nilai;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -182,6 +184,7 @@ class StudentController extends ApiController
         if(isset($request->id_ujian)){
             $idUjian = $request->id_ujian;
             $arr = $request->arr;
+            $nik = $request->nik;
             $ujian = DB::table('ujian')
             ->where('id','=',$idUjian)
             ->select('*')
@@ -213,14 +216,33 @@ class StudentController extends ApiController
                                 }
                             }
                             //insert to jawaban siswa
+                            $jawabanSiswa = new JawabanSiswa();
+                            $jawabanSiswa->id_soal = $arr[$i]['id'];
+                            $jawabanSiswa->nomor_soal = $i + 1;
+                            $jawabanSiswa->id_ujian = $idUjian;
+                            $jawabanSiswa->nik = $nik;
+                            $jawabanSiswa->jawaban = $arr[$i]['e'];
+                            $jawabanSiswa->pilihan_jawaban = $arr[$i]['selected'];
+                            $jawabanSiswa->jawaban_asli = $this->checkJawabanAsli($arr[$i]['kunci_pg']);
+                            $jawabanSiswa->ja = $arr[$i]['a'];
+                            $jawabanSiswa->jb = $arr[$i]['b'];
+                            $jawabanSiswa->jc = $arr[$i]['c'];
+                            $jawabanSiswa->jd = $arr[$i]['d'];
+                            // $jawabanSiswa->save();
                         }
                     }
                     //insert to db nilai
-                    $nilai = $benar / $totalSoal;
-                    $nilai = $nilai * 100;
-                    echo $benar . PHP_EOL;
-                    echo $totalSoal . PHP_EOL;
-                    echo number_format($nilai,2);
+                    $hasil = $benar / $totalSoal;
+                    $hasil = $hasil * 100;
+
+                    $nilai = new Nilai();
+                    $nilai->nik = $nik;
+                    $nilai->id_ujian = $idUjian;
+                    $nilai->hasil = number_format($hasil,0);
+                    $nilai->tipe = $tipe;
+                    $nilai->tampil = "non-aktif";
+                    $nilai->ujian_ulang = 0;
+                    $nilai->save();
                     return null;
                 }else{
                     $isian = DB::table('ujian_has_soal')
@@ -254,5 +276,21 @@ class StudentController extends ApiController
         }else{
             return false;
         }
+    }
+
+    protected function checkJawabanAsli($kunci){
+        $jawabanReal = '';
+        if($kunci == 1){
+            $jawabanReal = 'd';
+        }else if($kunci == 2){
+            $jawabanReal = 'a';
+        }else if($kunci == 3){
+            $jawabanReal = 'c';
+        }else if($kunci == 4){
+            $jawabanReal = 'd';
+        }else if($kunci == 5){
+            $jawabanReal = 'b';
+        }
+        return $jawabanReal;
     }
 }
