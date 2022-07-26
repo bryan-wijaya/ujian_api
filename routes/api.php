@@ -23,3 +23,4 @@ Route::get("students/getAllUser", 'App\Http\Controllers\StudentController@getAll
 Route::post("students/getUjianByUser", 'App\Http\Controllers\StudentController@getUjianByUser');
 Route::post("students/soalUjian", 'App\Http\Controllers\StudentController@getSoalByIdUjian');
 Route::post("students/collectUjian", 'App\Http\Controllers\StudentController@collectUjian');
+Route::post("students/report", 'App\Http\Controllers\StudentController@report');

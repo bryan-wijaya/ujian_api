@@ -44,10 +44,13 @@ class StudentController extends ApiController
             $nik = $request->nik;
             $siswa = Student::where('nik','=',$nik)->first();
             if(isset($siswa) && $siswa != null){
+                $nilai = DB::table('nilai')->where('nik','=',$nik)->where('ujian_ulang','=',0)->select('id_ujian')->get();
+                $retNilai = json_decode(json_encode($nilai), true);
                 $kelas = substr($siswa->kelas,0,1);
                 $ujian = DB::table('ujian')
                     ->where('status','=','aktif')
                     ->where('kelas','=',$kelas)
+                    ->whereNotIn('id', $retNilai)
                     ->select('*')
                     ->get();
                 return $this->successResponse($ujian,"Success",200);
@@ -255,6 +258,16 @@ class StudentController extends ApiController
             }
         }
         return $this->errorResponse('Something has been wrong.', 400);
+    }
+
+    public function report(Request $request){
+        if(isset($request->nik)){
+            $nilai = DB::table('nilai')
+                ->join('ujian','nilai.id_ujian','=','ujian.id')->where('nilai.nik','=',$request->nik)->where('nilai.ujian_ulang','=',0)->select('nilai.*','ujian.nama as nama_ujian')->get();
+            return $this->successResponse($nilai,"Success",200);
+        }else{
+            return $this->errorResponse('Something has been wrong.', 400);
+        }
     }
 
     protected function checkKunci($kunci, $jawaban){
